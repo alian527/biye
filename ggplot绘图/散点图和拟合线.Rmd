@@ -1,0 +1,76 @@
+install.packages("devtools")
+install.packages("tidyverse")
+install.packages("ggsignif")
+install.packages("devEMF")
+
+library(devtools)
+library(tidyr)
+library(dplyr)
+library(purrr)
+library(tidyverse)
+library(ggplot2)
+library(ggsignif)
+library(car)
+library(bruceR)`
+
+getwd()
+
+rm(list = ls())
+gc()
+
+p<- import("散点图和拟合线.xlsx",header = T)
+p
+
+library(ggplot2)
+ data(p)
+ q-ggplot(data=p，mapping=aes(x=ETI情感虐待, y=EDEQ 总分))
+q+geom_point() # 以散点图形式呈现
+
+library(ggplot2)
+ggplot(p, aes(情感虐待,EDEQ总分))+
+  geom_point(size=3,color="black",alpha=0.5)+
+labs(x="情感虐待",y="EDE-Q总分",title="The Relationship Between Speed and Distance")+
+geom_smooth(color="black",method="lm",se=FALSE)+
+theme_bw()+theme(plot.title=element_text(hjust=0.5,size=20),axis.title=element_text(size=20))+ theme(axis.text.x = element_text(size = 18, angle = 0, hjust = 1))+ 
+theme(axis.text.y = element_text(size = 18))
+
+library(ggplot2)
+ggplot(p, aes(ETI躯体创伤,EDEQ总分))+
+  geom_point(size=3,color="black",alpha=0.5)+
+labs(x="躯体创伤",y="EDE-Q总分")+
+geom_smooth(color="black",method="lm",se=FALSE)+
+theme_bw()+theme(plot.title=element_text(hjust=0.5,size=20),axis.title=element_text(size=20))+ theme(axis.text.x = element_text(size = 18, angle = 0, hjust = 1))+ 
+theme(axis.text.y = element_text(size = 18))
+
+library(ggplot2)
+ggplot(p, aes(EDEQ总分,CpGlep39))+
+  geom_point(size=3,color="black",alpha=0.5)+
+labs(x="EDE-Q总分",y="methylation levels of LEP CpG 39")+
+geom_smooth(color="black",method="lm",se=FALSE)+
+theme_bw()+theme(plot.title=element_text(hjust=0.5,size=20),axis.title=element_text(size=20))+ theme(axis.text.x = element_text(size = 18, angle = 0, hjust = 1))+ 
+theme(axis.text.y = element_text(size = 18))
+
+library(ggplot2)
+ggplot(p, aes(EDEQ总分,CpGghsr22))+
+  geom_point(size=3,color="black",alpha=0.5)+
+labs(x="EDE-Q总分",y="methylation levels of GHSR CpG 22")+
+geom_smooth(color="black",method="lm",se=FALSE)+
+theme_bw()+theme(plot.title=element_text(hjust=0.5,size=20),axis.title=element_text(size=20))+ theme(axis.text.x = element_text(size = 18, angle = 0, hjust = 1))+ 
+theme(axis.text.y = element_text(size = 18))
+
+library(ggplot2)
+ggplot(p, aes(ETI躯体创伤,LEP))+
+  geom_point(size=3,color="black",alpha=0.5)+
+labs(x="ETI躯体创伤",y="methylation levels of LEP")+
+geom_smooth(color="black",method="lm",se=FALSE)+
+theme_bw()+theme(plot.title=element_text(hjust=0.5,size=20),axis.title=element_text(size=20))+ theme(axis.text.x = element_text(size = 18, angle = 0, hjust = 1))+ 
+theme(axis.text.y = element_text(size = 18))
+
+library(ggplot2)
+ggplot(p, aes(ETI躯体创伤,GHSR))+
+  geom_point(size=3,color="black",alpha=0.5)+
+labs(x="ETI躯体创伤",y="methylation levels of GHSR")+
+geom_smooth(color="black",method="lm",se=FALSE)+
+theme_bw()+theme(plot.title=element_text(hjust=0.5,size=20),axis.title=element_text(size=20))+ theme(axis.text.x = element_text(size = 18, angle = 0, hjust = 1))+ 
+theme(axis.text.y = element_text(size = 18))
+

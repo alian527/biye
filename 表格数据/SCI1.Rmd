@@ -1,0 +1,48 @@
+
+install.packages("readxl")
+
+library(ggplot2)
+library(readxl)
+
+methy1=read_excel("methylation.xlsx",col_names = TRUE)
+
+
+picLEP=ggplot(methy1,aes(x=group,y=LEP))+theme_classic()+
+geom_bar(stat = "summary")+geom_errorbar(aes(ymin=Mean-Sd, ymax=Mean +Sd),position=position_dodge(.6), width=.2)
+picLEP
+
+labs(x='group', y='Methtlation level of  LEP(%)')+theme_classic()
+picGHSR=ggplot(methy1,aes(group,GHSR))+
+geom_boxplot()+labs(x='group', y='Methtlation level of  GHSR(%)')
+picGHSR
+
+picLEP
+
+picGHSR
+
+ggplot(methy1,aes(group,LEP))+
+stat_summary(mapping=aes(fill = group),fun=mean,geom = "bar",fun.args = list(mult=1),width=0.7,color="black")+stat_summary(fun.data=mean_sdl,fun.args = list(mult=1),geom="errorbar",width=0.2)+scale_fill_manual(values=c("black","white"))+
+theme_classic()+
+scale_y_continuous(expand = c(0,0),limits = c(0,51))+
+theme(panel.background=element_rect(fill="white",colour="white",size=0.25), # 填充框内主题颜色，边框颜色和边框线条粗细
+axis.line=element_line(colour="black",size=1), # x,y轴颜色，粗细
+axis.title=element_text(size=15,color="black"), # x,y轴名设置
+axis.text = element_text(size=15,color="black"), # x,y轴文本设置
+legend.position="none"
+)+
+labs(x='', y='LEP mean methtlation [%]')
+
+ggplot(methy1,aes(group,GHSR))+
+stat_summary(mapping=aes(fill = group),fun=mean,geom = "bar",fun.args = list(mult=1),width=0.7,color="black")+stat_summary(fun.data=mean_sdl,fun.args = list(mult=1),geom="errorbar",width=0.2)+scale_fill_manual(values=c("black","white"))+
+theme_classic()+
+scale_y_continuous(expand = c(0,0),limits = c(0,17))+
+theme(panel.background=element_rect(fill="white",colour="white",size=0.25), # 填充框内主题颜色，边框颜色和边框线条粗细
+axis.line=element_line(colour="black",size=1), # x,y轴颜色，粗细
+axis.title=element_text(size=15,color="black"), # x,y轴名设置
+axis.text = element_text(size=15,color="black"), # x,y轴文本设置
+legend.position="none"
+)+
+labs(x='', y='GHSR mean methtlation [%]')
+
+
+

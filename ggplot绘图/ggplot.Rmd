@@ -1,0 +1,82 @@
+install.packages("devtools")
+install.packages("tidyverse")
+install.packages("ggsignif")
+install.packages("devEMF")
+
+library(devtools)
+library(tidyr)
+library(dplyr)
+library(purrr)
+library(tidyverse)
+library(ggplot2)
+library(ggsignif)
+library(car)
+library(bruceR)`
+
+getwd()
+
+rm(list = ls())
+gc()
+
+
+
+methghsr <- import("5.xlsx",header = T)
+methghsr1 <- import("7.xlsx",header = T)
+
+WORD_SIZE = 15
+
+level1 <- methghsr[,7]
+
+methghsr$gene <- factor(methghsr$gene, levels=c("CpG8", "CpG9", "CpG10","CpG11","CpG12","CpG mean"), ordered=TRUE)
+methghsr1$gene <- factor(methghsr1$gene, levels=c("CpG1", "CpG2", "CpG3","CpG4","CpG5","CpG6","CpG7","CpG mean"), ordered=TRUE)
+
+ggplot(data = methghsr, aes(x = gene,y=m, fill = group)) +   
+labs(x='甲基化位点', y='Methtlation level of  GHSR(%)', fill='group') +
+geom_bar(position=position_dodge(),stat="identity",colour="black")+
+geom_errorbar(aes(ymin=m-b, ymax=m+b),width=0.2,position=position_dodge(.9))+
+scale_fill_manual(values=c("black", "grey"))+
+theme(text=element_text(size=20,  family="serif"))+
+theme(axis.text.x = element_text(angle=90, hjust=1, vjust=.5))+
+ylim(0, 40)
+
+ggplot(data = methghsr1, aes(x = gene,y=m, fill = group)) +   
+labs(x='甲基化位点', y='Methtlation level of  LEP(%)', fill='group') +
+geom_bar(position=position_dodge(),stat="identity",colour="black")+
+geom_errorbar(aes(ymin=m-b, ymax=m+b),width=0.2,position=position_dodge(.9))+
+scale_fill_manual(values=c("black", "grey"))+
+theme(text=element_text(size=20,  family="serif"))+
+theme(axis.text.x = element_text(angle=90, hjust=1, vjust=.5))+
+ylim(0, 100)
+
+
+
+
+theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+geom_errorbar(aes(ymin = loc25, ymax = loc75),position = position_dodge(0.5),width = 1) + 
+geom_signif(y_position=c(8,14,30), xmin=c(0.85, 12.85,21.85), xmax=c(1.15, 13.15,22.15),annotation=c("*", "**", "*"), tip_length=0.04)
+p1
+
+methlep <- import("methlep.xlsx",header = T)
+
+level2 <- methlep[,7]
+p2=ggplot(data = methlep, aes(factor(gene, level = level2), y = loc50, fill = group)) +   
+labs(x='甲基化绘图', y='Methtlation level(%)', fill='group') +
+geom_col(position = 'dodge', width = 0.5) +
+theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+geom_errorbar(aes(ymin = loc25, ymax = loc75),position = position_dodge(0.5),width = 0.2) + 
+geom_signif(y_position=c(64,45,8,55,55,65,45,45,30,10,30,20,40,24), xmin=c(3.85,5.85,8.85,22.85,23.85,31.85,38.85,40.85,41.85,42.85,44.85,45.85,47.85,50.85), xmax=c(4.15, 6.15, 9.15, 23.15, 24.15, 32.15, 39.15, 41.15, 42.15, 43.15, 45.15, 46.15, 48.15,51.15),annotation=c("*","*","*","*","*","*","*","*","*","*","*","*","*","*"), tip_length=0.04)
+p2
+
+rs1137101 <- import("snpany.xlsx",header = T)
+p3=ggplot(data = rs1137101, aes(x=group, y = value, fill = gene))+
+geom_col(width = 0.4)+labs(x='rs1137101', y='SNP(%)', fill='SNP')+
+geom_signif(y_position=105,xmin=1,xmax=2,annotation="*,P=0.02")
+p3
+
+rs696217 <- import("snpany2.xlsx",header = T)
+p4=ggplot(data = rs696217, aes(x=group, y = value, fill = gene))+
+geom_col(width = 0.4)+labs(x='rs696217', y='SNP(%)', fill='SNP')+
+geom_signif(y_position=105,xmin=1,xmax=2,annotation="**,P<0.01")
+p4
+
+

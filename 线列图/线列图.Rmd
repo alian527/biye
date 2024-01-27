@@ -1,0 +1,56 @@
+install.packages("devtools")
+install.packages("tidyverse")
+install.packages("ggsignif")
+
+install.packages("regplot")
+install.packages("forestplot")
+install.packages("haven")
+install.packages("rms")
+install.packages("DynNom")
+install.packages("regplot")
+devtools::install_local("D:/R/R包/VRPM_1.2.tar.gz") # 需要下载压缩包本地安装
+
+library(forestplot)
+library(haven)
+library(survival)
+library(devtools)
+library(tidyr)
+library(dplyr)
+library(purrr)
+library(tidyverse)
+library(ggplot2)
+library(ggsignif)
+library(car)
+
+library(bruceR)`
+
+getwd()
+
+rm(list = ls())
+gc()
+
+
+
+df <- import("总数据.xlsx",header = T)
+
+mlr <- lm(EDEQ总分 ~ 年龄 + BMI+CpGlep39+ETI情感虐待,data=df)   
+summary(mlr)
+
+plot_model(mlr)
+
+ggforest(mlr)
+
+install.packages("forestmodel")
+
+library(forestmodel)   # 森林图
+library(ggplot2)       # 使用到里面的数据集“msleep”
+library(dplyr)         # 数据处理
+library(survival)      # 生存分析
+
+
+# 拟合线性回归模型
+linear_model <- lm(sleep_total ~ brainwt + bodywt + sleep_rem + vore, data = msleep)
+
+# 森林图
+forest_model(mlr)
+
