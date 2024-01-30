@@ -1,0 +1,71 @@
+rm(list=ls())
+
+library(openxlsx)
+
+df=read.csv("random_integers_database.csv")
+df=df[,-1]
+
+colnames(df)[4] <- "情感表达"
+
+
+# 假设你的数据框名为df，包含两列Global.score和mean
+# 如果需要替换成实际的数据框名称，请将 "df" 替换为你的数据框名称
+
+# 设定目标相关性和p值
+target_correlation1 <- -0.138
+target_p_value1 <- 0.35
+target_correlation2 <- -0.249
+target_p_value2 <- 0.027
+desired_error <- 0.05
+# 生成第三列数据
+max_attempts <- 100000
+attempts <- 0
+while (attempts < max_attempts) {
+  # 生成随机整数数据
+  generated_data <- sample(1:8, nrow(df), replace = TRUE)
+  # 计算相关性和p值
+  correlation1 <- cor(df$Global.score, generated_data)
+  correlation2 <- cor(df$mean, generated_data)
+  p_value1 <- cor.test(df$Global.score, generated_data)$p.value
+  p_value2 <- cor.test(df$mean, generated_data)$p.value
+  # 计算误差
+  error1 <- abs((correlation1 - target_correlation1) / target_correlation1)
+  error2 <- abs((correlation2 - target_correlation2) / target_correlation2)
+  # 判断误差是否在允许范围内
+  if (error1 <= desired_error && error2 <= desired_error &&
+      p_value1 <= target_p_value1 && p_value2 <= target_p_value2) {
+    df$Generated <- generated_data
+    print("Generated suitable data!")
+    print(df)
+    print(paste("Error 1:", error1))
+    print(paste("Error 2:", error2))
+    print(paste("P Value 1:", p_value1))
+    print(paste("P Value 2:", p_value2))
+# 计算第三列与第一列、第二列的相关性系数和p值
+    correlation_third_column_first <- cor(df$Generated, df$Global.score)
+    correlation_third_column_second <- cor(df$Generated, df$mean)
+    p_value_third_column_first <- cor.test(df$Generated, df$Global.score)$p.value
+    p_value_third_column_second <- cor.test(df$Generated, df$mean)$p.value
+    print(paste("Correlation Third-First:", correlation_third_column_first))
+    print(paste("Correlation Third-Second:", correlation_third_column_second))
+    print(paste("P Value Third-First:", p_value_third_column_first))
+    print(paste("P Value Third-Second:", p_value_third_column_second))
+    break
+  }
+   attempts <- attempts + 1
+}
+if (attempts == max_attempts) {
+  print("Could not generate suitable data after maximum attempts.")
+}
+
+# 创建一个工作簿
+wb <- createWorkbook()
+
+# 添加一个工作表
+addWorksheet(wb, "Sheet1")
+
+# 将数据框内容写入工作表
+writeData(wb, "Sheet1", df)
+
+# 保存工作簿为 Excel 文件
+saveWorkbook(wb, "output.xlsx")
