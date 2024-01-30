@@ -1,0 +1,46 @@
+library(dplyr)
+rm( list=ls())
+
+# 设置随机数种子，以便结果可以复现
+set.seed(123)
+
+# 生成的整数数量
+num_values <- 101
+
+# 生成符合条件的整数序列
+generate_custom_integers <- function(n, mean_target, sd_target, min_value, max_value) {
+  while (TRUE) {
+    random_integers <- round(rnorm(n, mean = mean_target, sd = sd_target))
+    random_integers <- pmax(pmin(random_integers, max_value), min_value)
+    if (mean(random_integers) >= (mean_target - 0.1) && mean(random_integers) <= (mean_target + 0.1)) {
+      return(random_integers)
+    }
+  }
+}
+
+# 调用函数生成整数序列
+random_integers1 <- generate_custom_integers(num_values, mean_target =5.90, sd_target = 2.84, min_value = 1, max_value = 8)
+
+random_integers2 <- generate_custom_integers(num_values, mean_target = 5.56, sd_target = 2.17, min_value = 1, max_value = 8)
+
+random_integers3 <- generate_custom_integers(num_values, mean_target = 4.2, sd_target = 2.3, min_value = 1, max_value = 8)
+
+# 输出结果
+print(random_integers1)
+cat("实际平均数:", mean(random_integers3), "\n")
+cat("实际标准差:", sd(random_integers3), "\n")
+
+
+data <- data.frame(
+  Sequence = 1:num_values,
+  RandomIntegers1 = random_integers1,
+  RandomIntegers2 = random_integers2,
+  RandomIntegers3 = random_integers3
+)
+
+# 将数据框保存为CSV文件（也可以选择其他格式）
+write.csv(data, "random_integers_database.csv", row.names = FALSE)
+
+df=read.csv("random_integers_database.csv")
+
+
