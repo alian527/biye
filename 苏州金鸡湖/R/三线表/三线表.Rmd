@@ -75,7 +75,7 @@ df=read_excel("原始数据.xlsx",col_names = TRUE)
 df <- as.data.frame(df)
 rownames(df) = df[,1]
 df = df[,-1]
-df1=df[,c(1:4,7,10:26)]
+df1=df[,c(1,2:45)]
 
 
 result <- sxb(df1)
