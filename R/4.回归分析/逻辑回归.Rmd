@@ -1,0 +1,151 @@
+install.packages("caret")
+install.packages("reshape2")
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("nnet")
+
+library(nnet)
+library(tibble)
+library(forestplot)
+library(glmnet)
+library(caret)
+library(foreign)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(ggpubr)
+library(cowplot)
+library(ggplot2)
+library(readxl)
+library(graphics)
+library(PerformanceAnalytics)
+library(sjPlot)
+library(reshape2)
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(gridExtra)
+
+
+rm(list = ls())#清空数据
+
+
+
+
+
+
+df <- read_excel("原始数据.xlsx")
+df <- as.data.frame(df)
+rownames(df) = df[,1]
+df = df[,-1]
+
+dfan <- subset(df, group == "AN")
+dfhc <- subset(df, group == "HC")
+
+ model1 <- multinom(group ~ `LEP` + `IL-6` + `Claudin-5` + Zonulin, data = df)
+summary(model1)
+wald_z <- summary(model1)$coefficients / summary(model1)$standard.errors
+p_values <- 2 * (1 - pnorm(abs(wald_z)))
+p_values
+
+modelan1 <- glm(LEP ~`general trauma ` +`physical abuse` +`emotional abuse`+`sexual abuse`+cohesion+expressiveness+conflict, data = dfan)
+summary(modelan1)
+
+modelan1 <- glm(Global ~ `Claudin-5` + Zonulin+ai, data = dfan)
+summary(modelan1)
+
+modelan2 <- glm(Global ~ `TNF-a` + `IL-6` + `Claudin-5` + Zonulin, data = dfan)
+summary(modelan2)
+wald_z <- summary(modelan2)$coefficients / summary(modelan2)$standard.errors
+p_values <- 2 * (1 - pnorm(abs(wald_z)))
+p_values
+
+
+model1hc <- glm(Global ~ `TNF-a` + `IL-6` + `Claudin-5` + Zonulin+ BMI, data = df1)
+summary(model1)
+wald_z <- summary(model1)$coefficients / summary(model1)$standard.errors
+p_values <- 2 * (1 - pnorm(abs(wald_z)))
+p_values
+
+model1 <- model1 <- glm(Global ~ `TNF-a` + `IL-6` + `Claudin-5` + Zonulin+ BMI, data = dfan)
+summary(model1)
+wald_z <- summary(model1)$coefficients / summary(model1)$standard.errors
+p_values <- 2 * (1 - pnorm(abs(wald_z)))
+p_values
+
+model1 <- model1 <- glm(Global ~ `TNF-a` + `IL-6` + `Claudin-5` + Zonulin+ BMI, data = dfhc)
+summary(model1)
+wald_z <- summary(model1)$coefficients / summary(model1)$standard.errors
+p_values <- 2 * (1 - pnorm(abs(wald_z)))
+p_values
+
+
+df <- read_excel("逻辑回归.xlsx")
+df <- as.data.frame(df)
+rownames(df) = df[,1]
+df = df[,-1]
+df1=df[,c(1,4,9,22:25)]
+df1$group <- ifelse(df1$group == "AN", 1,0)
+for (i in 4:7) {
+  df1[, i] <- rank(df1[, i])
+}
+model2 <- glm(group~`TNF-a`+`IL-6`+`Claudin-5`+Zonulin, data = df1, family = binomial(link = "logit")) 
+summary(model2)
+# 提取逻辑回归模型系数和标准误差
+
+coef <- coef(model2)
+odds_ratios <- exp(coef)
+conf_int <- confint(model2)
+
+summary_model <- summary(model2)
+p_values <- summary_model$coefficients[, "Pr(>|z|)"]
+
+odds_ratios_lower <- exp(conf_int[, 1])
+odds_ratios_upper <- exp(conf_int[, 2])
+c2=cbind(odds_ratios, odds_ratios_lower, odds_ratios_upper,p_values)
+
+summary(model2)
+
+c2 <- apply(c2, c(1,2), function(x) round(x, digits = 3))
+
+fore <- as.data.frame(c2)
+fore <- fore[-1,]
+forew=fore
+colnames(forew) <-c("OR","l_OR","u_OR","P")
+fore=cbind(rownames(fore),forew,fore)
+write.csv(fore,"fore1.csv")
+
+fore=read.csv("fore1.csv")
+# 创建森林图
+
+forestplot(
+  fore[, 1:5],
+  mean = fore$odds_ratios,
+  lower = fore$odds_ratios_lower,
+  upper = fore$odds_ratios_upper,
+  graph.pos = 5,
+  zero = 1,
+  boxsize = 0.05,
+  cex = 4,
+  hrzl_lines = list(
+    "2" = gpar(lty = 1, col = "black",lwd=3),
+    "1" = gpar(lty = 1, col = "black",lwd=3),
+    "6" = gpar(lty = 1, col = "black",lwd=3)
+  ),
+  lineheight = unit(0.5, "lines"),  
+  colgap = unit(5, "mm"),
+  col = fpColors(box = "#1c61b6", lines = "#1c61b6", zero = "gray50"),
+  lwd.ci = 2,
+  grid = TRUE,
+  line = list(c(2, 3)),
+  ci.vertices = TRUE,
+  line.margin = 0.1, 
+  lwd.zero = 2,
+  lwd.xaxis = 2,
+  lwd.axis = 3
+)
+
+         
+
+           
+           
