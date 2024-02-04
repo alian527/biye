@@ -25,34 +25,24 @@ rm(list = ls())#清空数据
 
 df <- read_excel("原始数据.xlsx")
 
-df1=df[,]
-
-
-X=df1$BMI
-Y=df1$LEP
-Z=df1$group
-
-cor_test_an <- cor.test(X[Z == "AN"], Y[Z == "AN"])
-cor_test_hc <- cor.test(X[Z == "HC"], Y[Z == "HC"]) 
-
+df1=df[c(-1,-5,-13,-14,-23),c(2,5,23:26)]
+cor_test_an <- cor.test(df1$BMI[df1$group == "AN"], df1$`TNF-a`[df1$group == "AN"])
+cor_test_hc <- cor.test(df1$BMI[df1$group == "HC"], df1$`TNF-a`[df1$group == "HC"]) 
 an1=paste("AN","r =",round(cor_test_an$estimate, 2),"p =",round(cor_test_an$p.value, 3),"**")
 hc1=paste("HC","r =",round(cor_test_hc$estimate, 2),"p =",round(cor_test_hc$p.value, 3))
-Z[Z == "AN"] <- an1
-Z[Z == "HC"] <- hc1
-g1=ggplot(df1, aes(BMI, LEP, color = group)) +
+df1$group[df1$group == "AN"] <- an1
+df1$group[df1$group == "HC"] <- hc1
+g1=ggplot(df1, aes(BMI, `TNF-a`, color = group)) +
   geom_point() +
   geom_smooth(method = "lm", se = TRUE) +
   labs(color = "Group") +
   scale_y_continuous(limits = c(0, NA)) +
   scale_color_manual(values = c("red", "blue")) +
   theme_classic() +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1.1 * max(Y))) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1.1 * max(df1$`TNF-a`))) +
   theme(legend.position = c(0.7, 0.85))+
   labs(x = 'BMI(kg/m2)', y = 'TNF-a expression (ng/ml)')
 g1
-
-
-
 df2=df[c(-1,-5,-23),c(2,5,23:26)]
 cor_test_an <- cor.test(df2$BMI[df2$group == "AN"], df2$`IL-6`[df2$group == "AN"])
 cor_test_hc <- cor.test(df2$BMI[df2$group == "HC"], df2$`IL-6`[df2$group == "HC"]) 

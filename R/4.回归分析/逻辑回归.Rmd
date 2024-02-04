@@ -25,8 +25,6 @@ library(dplyr)
 library(ggplot2)
 library(readxl)
 library(gridExtra)
-
-
 rm(list = ls())#清空数据
 
 
@@ -41,13 +39,14 @@ df = df[,-1]
 
 dfan <- subset(df, group == "AN")
 dfhc <- subset(df, group == "HC")
-
- model1 <- multinom(group ~ `LEP` + `IL-6` + `Claudin-5` + Zonulin, data = df)
+#逻辑回归的
+model1 <- multinom(group ~ `LEP` + `IL-6` + `Claudin-5` + Zonulin, data = df)
 summary(model1)
 wald_z <- summary(model1)$coefficients / summary(model1)$standard.errors
 p_values <- 2 * (1 - pnorm(abs(wald_z)))
 p_values
 
+#线性回归，童年创伤回忆和LEP甲基化结果
 modelan1 <- glm(LEP ~`general trauma ` +`physical abuse` +`emotional abuse`+`sexual abuse`+cohesion+expressiveness+conflict, data = dfan)
 summary(modelan1)
 
