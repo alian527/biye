@@ -2,6 +2,8 @@ install.packages("reshape2")
 install.packages("ggplot2")
 install.packages("dplyr")
 
+rm(list = ls())#清空数据
+
 library(foreign)
 library(ggplot2)
 library(grid)
@@ -18,28 +20,28 @@ library(dplyr)
 library(ggplot2)
 library(readxl)
 library(gridExtra)
-rm(list = ls())#清空数据
+
 
 
 
 
 df <- read_excel("原始数据.xlsx")
-
 df1=df[,]
 
 
-X=df1$BMI
-Y=df1$LEP
-Z=df1$group
-
+#LEP和EDEQ总分的相关性
+Y=df1$`Global score`#横轴
+X=df1$LEP#纵轴
+Z=df1$group#不同分组
+Ym="Global score"
+Xm="LEP"
 cor_test_an <- cor.test(X[Z == "AN"], Y[Z == "AN"])
 cor_test_hc <- cor.test(X[Z == "HC"], Y[Z == "HC"]) 
-
 an1=paste("AN","r =",round(cor_test_an$estimate, 2),"p =",round(cor_test_an$p.value, 3),"**")
 hc1=paste("HC","r =",round(cor_test_hc$estimate, 2),"p =",round(cor_test_hc$p.value, 3))
 Z[Z == "AN"] <- an1
 Z[Z == "HC"] <- hc1
-g1=ggplot(df1, aes(BMI, LEP, color = group)) +
+g1=ggplot(df1, aes(X, Y, color = Z)) +
   geom_point() +
   geom_smooth(method = "lm", se = TRUE) +
   labs(color = "Group") +
@@ -48,65 +50,33 @@ g1=ggplot(df1, aes(BMI, LEP, color = group)) +
   theme_classic() +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 1.1 * max(Y))) +
   theme(legend.position = c(0.7, 0.85))+
-  labs(x = 'BMI(kg/m2)', y = 'TNF-a expression (ng/ml)')
+  labs(x = Xm, y = Ym)
 g1
 
-
-
-df2=df[c(-1,-5,-23),c(2,5,23:26)]
-cor_test_an <- cor.test(df2$BMI[df2$group == "AN"], df2$`IL-6`[df2$group == "AN"])
-cor_test_hc <- cor.test(df2$BMI[df2$group == "HC"], df2$`IL-6`[df2$group == "HC"]) 
-an2=paste("AN","r =",round(cor_test_an$estimate, 2),"p =",round(cor_test_an$p.value, 3))
-hc2=paste("HC","r =",round(cor_test_hc$estimate, 2),"p =",round(cor_test_hc$p.value, 3))
-df2$group[df2$group == "AN"] <- an2
-df2$group[df2$group == "HC"] <- hc2
-g2=ggplot(df2, aes(BMI, `IL-6`, color = group)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = TRUE) +
-  labs(color = "Group") +
-  scale_y_continuous(limits = c(0, NA)) +
-  scale_color_manual(values = c("red", "blue")) +
-  theme_classic()+
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1.1 * max(df1$`IL-6`))) +
-  theme(legend.position = c(0.7, 0.85))+
-  labs(x = 'BMI(kg/m2)', y = 'IL-6 expression (ng/l)')
-g2  
-df3=df[c(-1,-5,-23),c(2,5,23:26)]
-cor_test_an <- cor.test(df3$BMI[df3$group == "AN"], df3$`Claudin-5`[df3$group == "AN"])
-cor_test_hc <- cor.test(df3$BMI[df3$group == "HC"], df3$`Claudin-5`[df3$group == "HC"]) 
-an3=paste("AN","r =",round(cor_test_an$estimate, 2),"p =",round(cor_test_an$p.value, 3))
-hc3=paste("HC","r =",round(cor_test_hc$estimate, 2),"p =",round(cor_test_hc$p.value, 3))
-df3$group[df3$group == "AN"] <- an3
-df3$group[df3$group == "HC"] <- hc3
-g3=ggplot(df3, aes(BMI, `Claudin-5`, color = group)) +
+#LEP和EDEQ总分的相关性
+X=df1$`emotional abuse`#横轴
+Y=df1$LEP#纵轴
+Z=df1$group#不同分组
+Xm="emotional abuse"
+Ym="LEP"
+cor_test_an <- cor.test(X[Z == "AN"], Y[Z == "AN"])
+cor_test_hc <- cor.test(X[Z == "HC"], Y[Z == "HC"]) 
+an1=paste("AN","r =",round(cor_test_an$estimate, 2),"p =",round(cor_test_an$p.value, 3),"**")
+hc1=paste("HC","r =",round(cor_test_hc$estimate, 2),"p =",round(cor_test_hc$p.value, 3))
+Z[Z == "AN"] <- an1
+Z[Z == "HC"] <- hc1
+g1=ggplot(df1, aes(X, Y, color = Z)) +
   geom_point() +
   geom_smooth(method = "lm", se = TRUE) +
   labs(color = "Group") +
   scale_y_continuous(limits = c(0, NA)) +
   scale_color_manual(values = c("red", "blue")) +
   theme_classic() +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1.1 * max(df1$`Claudin-5`))) +
+  scale_y_continuous(expand = c(0, 0), limits = c(min(Y), 1.1 * max(Y))) +
   theme(legend.position = c(0.7, 0.85))+
-  labs(x = 'BMI(kg/m2)', y = 'Claudin-5 expression (ng/ml)')
-g3
-  df4=df[c(-1,-5,-23),c(2,5,23:26)]
-cor_test_an <- cor.test(df4$BMI[df4$group == "AN"], df4$Zonulin[df4$group == "AN"])
-cor_test_hc <- cor.test(df4$BMI[df4$group == "HC"], df4$Zonulin[df4$group == "HC"]) 
-an4=paste("AN","r =",round(cor_test_an$estimate, 2),"p =",round(cor_test_an$p.value, 3))
-hc4=paste("HC","r =",round(cor_test_hc$estimate, 2),"p =",round(cor_test_hc$p.value, 3))
-df4$group[df4$group == "AN"] <- an4
-df4$group[df4$group == "HC"] <- hc4
-g4=ggplot(df4,aes(BMI, Zonulin, color = group)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = TRUE) +
-  labs(color = "Group") +
-  scale_y_continuous(limits = c(0, NA)) +
-  scale_color_manual(values = c("red", "blue")) +
-  theme_classic() +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1.1 * max(df1$Zonulin))) +
-  theme(legend.position = c(0.7, 0.85))+
-  labs(x = 'BMI(kg/m2)', y = 'Zonulin expression (ng/ml)')
-g4
+  labs(x = Xm, y = Ym)
+g1
+
 
 windows(width = 8, height =6)
 grid.arrange(g1, g2, g3,g4)

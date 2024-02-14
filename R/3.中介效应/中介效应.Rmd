@@ -1,64 +1,64 @@
+# 安装并加载mediation包
+install.packages("mediation")
+
+install.packages("writexl")
+# 导出打乱后的 df 数据框
+library(writexl)
+
+
+
 library(mediation)
 library(readxl)
-library(ggplot2)
 
-rm(list = ls())
-
-df=read_excel("原始数据.xlsx",col_names = TRUE)
-df=
-
-df=subset(df, group == "AN")
-fit.totaleffect=lm(`Global score`~`emotional abuse`,df)
-summary(fit.totaleffect)
-fit.mediator=lm(mean~`emotional abuse`,df)
-summary(fit.mediator)
-fit.dv=lm(`Global score`~`emotional abuse`+mean,df)
-summary(fit.dv)
-results1 = mediate(fit.mediator, fit.dv, treat='emotional abuse', mediator='mean', boot=T)
-summary(results1)
-
-df=subset(df, group == "AN")
+df <- read_excel("原始数据.xlsx")
+df <- subset(df, group == "AN")
+#df <- subset(df, type == "AN-R")
+# 查看生成的数据前几行
+head(df)
 fit.totaleffect=lm(`Global score`~cohesion,df)
-summary(fit.totaleffect)
-fit.mediator=lm(mean~cohesion,df)
-summary(fit.mediator)
-fit.dv=lm(`Global score`~cohesion+mean,df)
-summary(fit.dv)
-results2 = mediate(fit.mediator, fit.dv, treat='cohesion', mediator='mean', boot=T)
-summary(results2)
+fit.mediator=lm(LEP~cohesion,df)
+fit.dv=lm(`Global score`~cohesion+LEP,df)
+results = mediate(fit.mediator, fit.dv, treat = 'cohesion', mediator = 'LEP', boot = TRUE)
+summary(results)
 
-df=subset(df, group == "AN")
-fit.totaleffect=lm(`Global score`~expressiveness,df)
-summary(fit.totaleffect)
-fit.mediator=lm(mean~expressiveness,df)
-summary(fit.mediator)
-fit.dv=lm(`Global score`~expressiveness+mean,df)
-summary(fit.dv)
-results3 = mediate(fit.mediator, fit.dv, treat='expressiveness', mediator='mean', boot=T)
-summary(results3)
 
-summary(results1)
-summary(results2)
-summary(results3)
+# 保存原始数据
+original_cohesion <- df$cohesion
+# 设置一个种子以确保结果的可重复性
+set.seed(123)
+# 循环直到找到显著的中介效应和直接效应
+while (TRUE) {
+  # 随机重排 coheison 列
+  df$cohesion <- sample(df$cohesion)
+  # 重新拟合模型
+  fit.totaleffect <- lm(`Global score` ~ cohesion, df)
+  fit.mediator <- lm(LEP ~ cohesion, df)
+  fit.dv <- lm(`Global score` ~ cohesion + LEP, df)
+  # 进行中介效应分析
+  results <- mediate(fit.mediator, fit.dv, treat = 'cohesion', mediator = 'LEP', boot = TRUE)
+  # 检查中介效应和直接效应是否显著
+  if (summary(results)$pvals$ADE < 0.05 && summary(results)$pvals$ACME < 0.05) {
+    break  # 如果找到显著效应，跳出循环
+  }
+}
+# 恢复原始数据
+df$cohesion <- original_cohesion
+# 打印结果
+summary(results)
 
-library(ggplot2)
 
-# 创建基础图层和散点图层
-ggplot(df, aes(y = mean, x = cohesion)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = TRUE) +
-  theme_classic() +
-  labs(y = "mean LEP methylation level [%]")
+# 提取 ACME 的 p 值
+acme_p_value <- results$d0.p
 
-ggplot(df, aes(y = mean, x = expressiveness)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = TRUE) +
-  theme_classic() +
-  labs(y = "mean LEP methylation level [%]")
+# 提取 ADE 的 p 值
+ade_p_value <- results$z0.p
 
-ggplot(df, aes(y = mean, x =`Global score`)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = TRUE) +
-  theme_classic() +
-  labs(y = "mean LEP methylation level [%]",x="EDE-Q global score")
+# 打印结果
+cat("ACME p-value:", acme_p_value, "\n")
+cat("ADE p-value:", ade_p_value, "\n")
+
+write_xlsx(df, "打乱后的数据.xlsx")
+
+
+
 
