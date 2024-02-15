@@ -8,7 +8,7 @@ library(mediation)
 library(readxl)
 rm(list = ls())
 
-df <- read_excel("原始数据.xlsx")
+df <- read_excel("打乱后的数据2.xlsx")
 df <- subset(df, group == "AN")
 #df <- subset(df, type == "AN-R")
 # 查看生成的数据前几行
@@ -50,7 +50,6 @@ while (final_R_squared <= 0.1 | final_p_value >= 0.01 | final_p_value < 0.001) {
 
 #emotion排序
 df$`emotional abuse` <- sample(df$`emotional abuse`)
-
 n=0
 while (TRUE) {
   # 拟合三个模型
@@ -88,7 +87,6 @@ cat(n)
     df$`emotional abuse` <- sample(df$`emotional abuse`)
   }
 }
-
 fit.totaleffect=lm(`Global score`~`emotional abuse`,df)
 summary(fit.totaleffect)
 totaleffect_coef <- coef(summary(fit.totaleffect))[2, 1]
@@ -101,7 +99,6 @@ mediator_coef <- coef(summary(fit.mediator))[2, 1]
 mediator_coef
 mediator_p_value <- coef(summary(fit.mediator))[2, 4]
 mediator_p_value 
-
 fit.dv=lm(`Global score`~`emotional abuse`+LEP,df)
 summary(fit.dv)
 dv_emotional_abuse_coef1 <- coef(summary(fit.dv))[2, 1]
@@ -112,7 +109,6 @@ dv_emotional_abuse_p_value1 <- coef(summary(fit.dv))[2, 4]
 dv_emotional_abuse_p_value1
 dv_emotional_abuse_p_value2 <- coef(summary(fit.dv))[3, 4]
 dv_emotional_abuse_p_value2
-
 results = mediate(fit.mediator, fit.dv, treat = 'emotional abuse', mediator = 'LEP', boot = TRUE)
 summary(results)
 
@@ -158,6 +154,7 @@ cat(n)
     df$cohesion<- sample(df$cohesion)
   }
 }
+
 fit.totaleffect=lm(`Global score`~cohesion,df)
 summary(fit.totaleffect)
 totaleffect_coef <- coef(summary(fit.totaleffect))[2, 1]
