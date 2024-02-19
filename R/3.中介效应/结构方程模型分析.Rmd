@@ -1,0 +1,107 @@
+install.packages("lavaan")
+install.packages("semTools")
+install.packages("semPlot")
+install.packages("svglite")
+
+
+library(svglite)
+library(semPlot)
+library(semTools)
+library(lavaan)
+library(writexl)
+library(mediation)
+library(readxl)
+rm(list = ls())
+
+df <- read_excel("结构方程.xlsx")
+df <- subset(df, group == "AN")
+#df <- subset(df, type == "AN-R")
+# 查看生成的数据前几行
+head(df)
+data <- data.frame(
+  EmotionalAbuse = df$`emotional abuse`,
+  Cohesion = df$cohesion,
+  LEPMethylation = df$LEP,
+  GlobalScore = df$`Global score`)
+# 定义中介模型
+model <- '
+    LEPMethylation ~~ EmotionalAbuse
+    LEPMethylation ~~ Cohesion
+  # 因变量路径
+    GlobalScore ~ c*EmotionalAbuse + b*LEPMethylation + d*Cohesion 
+    # c表示f1对y的直接效应，b表示m对y的直接效应，d表示f2对y的直接效应
+    indirect := c*b  # 定义中介效应
+'
+# 拟合模型
+fit <- sem(model, data = data)
+# 绘制路径图
+# Plot the SEM paths with legend and specify legend background color
+path_plot <- semPaths(
+  fit,
+  whatLabels = "est.std",
+  style = "lisrel",
+  layout = "tree2",
+  edge.label.cex = 1,
+  intStyle = "multi",
+  intercepts = FALSE,
+  rotation = 3
+)
+
+
+# Save the path plot as an SVG file
+pdf("output_plot.pdf", width = 10, height = 5)
+semPaths(
+  fit,
+  whatLabels = "est.std",
+  style = "lisrel",
+  layout = "tree2",
+  edge.label.cex = 1,
+  intStyle = "multi",
+  intercepts = FALSE,
+  rotation = 3
+)
+# Add text to the SVG file using the base R text function
+text(x = 0.9, y = 0.8, labels = "GlS:EDE-Q GlobalScore", col = "black", cex = 1,adj = 0)
+text(x = 0.9, y = 0.6, labels = "Chs:FES-CV Cohesion", col = "black", cex = 1,adj = 0)
+text(x = 0.9, y =0.4, labels = "LEP:LEP methylation level", col = "black", cex = 1,adj = 0)
+text(x = 0.9, y =0.2, labels = "ETI: Emotional Abuse", col = "black", cex = 1,adj = 0)
+dev.off()
+
+?semPaths
+
+
+
+
+  # 使用semPaths绘制路径图（去掉变量与自己的连接线）
+semPaths(fit, what = "est.std", whatLabels = "est.std", layout = "tree", intercepts = FALSE, rotation = 2, edge.label.cex = 1)
+
+data <- data.frame(
+  x1 =df$`general trauma`,
+  x2 = df$`physical abuse`,
+  x3 = df$`emotional abuse`,
+  x4 = df$`sexual abuse`,
+  x5 = df$cohesion,
+  x6 = df$expressiveness,
+  x7 = df$conflict,
+  m = df$LEP,
+  y = df$`Global score`)
+
+# 定义中介模型
+model <- '
+  # 潜在变量
+    f1 =~ x1 + x2 + x3 + x4
+    f2 =~ x5 + x6 + x7
+  # 中介效应路径
+    m ~~ f1
+    m ~~ f2
+  # 因变量路径
+    y ~ c*f1 + b*m + d*f2  
+    # c表示f1对y的直接效应，b表示m对y的直接效应，d表示f2对y的直接效应
+    indirect := c*b  # 定义中介效应
+'
+
+# 拟合模型
+fit <- sem(model, data = data)
+
+# 查看模型拟合结果
+summary(fit)
