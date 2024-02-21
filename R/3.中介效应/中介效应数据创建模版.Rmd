@@ -8,7 +8,7 @@ library(mediation)
 library(readxl)
 rm(list = ls())
 
-df <- read_excel("打乱后的数据2.xlsx")
+df <- read_excel("原始数据.xlsx")
 df <- subset(df, group == "AN")
 #df <- subset(df, type == "AN-R")
 # 查看生成的数据前几行
@@ -87,6 +87,7 @@ cat(n)
     df$`emotional abuse` <- sample(df$`emotional abuse`)
   }
 }
+
 fit.totaleffect=lm(`Global score`~`emotional abuse`,df)
 summary(fit.totaleffect)
 totaleffect_coef <- coef(summary(fit.totaleffect))[2, 1]

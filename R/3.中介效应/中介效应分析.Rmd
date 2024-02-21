@@ -67,38 +67,3 @@ dv_emotional_abuse_p_value2
 results = mediate(fit.mediator, fit.dv, treat = 'cohesion', mediator = 'LEP', boot = TRUE)
 summary(results)
 
-# 计算总效应（total effect）包括两个自变量：emotional abuse 和 cohesion
-fit.totaleffect <- lm(`Global score` ~ `emotional abuse` + cohesion, df)
-summary(fit.totaleffect)
-
-# 输出总效应的系数和p值
-totaleffect_coef_emotional_abuse <- coef(summary(fit.totaleffect))[2, 1]
-totaleffect_coef_cohesion <- coef(summary(fit.totaleffect))[3, 1]
-totaleffect_p_value_emotional_abuse <- coef(summary(fit.totaleffect))[2, 4]
-totaleffect_p_value_cohesion <- coef(summary(fit.totaleffect))[3, 4]
-
-# 计算中介变量（mediator）的效应，同样包括两个自变量：emotional abuse 和 cohesion
-fit.mediator <- lm(LEP ~ `emotional abuse` + cohesion, df)
-summary(fit.mediator)
-
-# 输出中介效应的系数和p值
-mediator_coef_emotional_abuse <- coef(summary(fit.mediator))[2, 1]
-mediator_coef_cohesion <- coef(summary(fit.mediator))[3, 1]
-mediator_p_value_emotional_abuse <- coef(summary(fit.mediator))[2, 4]
-mediator_p_value_cohesion <- coef(summary(fit.mediator))[3, 4]
-
-# 计算调节后的总效应，同样包括两个自变量：emotional abuse 和 cohesion
-fit.dv <- lm(`Global score` ~ `emotional abuse` + cohesion + LEP, df)
-summary(fit.dv)
-
-# 输出调节后的总效应的系数和p值
-dv_emotional_abuse_coef1 <- coef(summary(fit.dv))[2, 1]
-dv_emotional_abuse_coef2 <- coef(summary(fit.dv))[3, 1]
-dv_cohesion_coef <- coef(summary(fit.dv))[4, 1]
-dv_emotional_abuse_p_value1 <- coef(summary(fit.dv))[2, 4]
-dv_emotional_abuse_p_value2 <- coef(summary(fit.dv))[3, 4]
-dv_cohesion_p_value <- coef(summary(fit.dv))[4, 4]
-
-# 进行中介效应分析
-results <- mediate(fit.mediator, fit.dv, treat = c('emotional abuse', 'cohesion'), mediator = 'LEP', boot = TRUE)
-summary(results)

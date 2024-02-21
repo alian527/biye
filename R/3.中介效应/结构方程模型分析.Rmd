@@ -13,7 +13,7 @@ library(mediation)
 library(readxl)
 rm(list = ls())
 
-df <- read_excel("结构方程.xlsx")
+df <- read_excel("原始数据.xlsx")
 df <- subset(df, group == "AN")
 #df <- subset(df, type == "AN-R")
 # 查看生成的数据前几行
