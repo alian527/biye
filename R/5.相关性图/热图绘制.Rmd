@@ -82,21 +82,20 @@ splitheatmap <- function(df1, m, method, n) {
 
 
 df <- read_excel("原始数据.xlsx")
-df1=df[,c(1:29)]
 #df1=df1[-3,]
 #df1=df[37:68,c(5,12:20,24:27)]
 #df1=df[1:68,c(5,12:20,24:27)]
+df <- subset(df, group == "AN")
+df1=df[,4:29]
+df1 <- as.data.frame(lapply(df1, as.numeric))
 
-df1 <- subset(df1, group == "AN")
-
-
-
-t=splitheatmap(df1,11,"spearman",1)
+t=splitheatmap(df1,15,"spearman",1)
 windows(width = 8, height = 6)
 t
-c=splitheatmap(df1,11,"spearman",n=2)
+
+c=splitheatmap(df1,15,"spearman",n=2)
 c
-b=splitheatmap(df1,11,"spearman",n=3)
+b=splitheatmap(df1,15,"spearman",n=3)
 b
 
 c=as.data.frame(c)
@@ -115,7 +114,8 @@ print(table_output)
 
 
 
-df2=df1[,c(4:27)]
+df2=df[,4:27]
+
 chart.Correlation(df2,main = "Correlation Matrix", 
                   xlab = "Variables", 
                   ylab = "Variables",method ="spearman")
